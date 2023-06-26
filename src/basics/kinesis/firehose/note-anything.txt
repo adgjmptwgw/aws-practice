@@ -1,0 +1,135 @@
+===================================================================================
+　English edition
+===================================================================================
+
+
+When creating a Kinesis Data Firehose (when storing data in S3 with Direct PUT)
+
+- Transform and convert records
+　- Convert source records in AWS Lambda
+　　You can customize the format in which the data is saved to S3 with Lambda.
+　　you can write processes such as saving in CSV format, or do other processing.
+　　Put Lambda between Kinesis Data Firehose => S3.
+
+- Destination settings
+　- Dynamic Partitioning
+　　If enabled, prefixes can be separated depending on the value of the request parameter.
+　　<Benefits>
+　　Data stored in S3 can be used by ETL tools such as Glue.
+　　Dynamic partitioning improves the efficiency of the process of importing data into ETL tools because the data is filtered.
+　　<Disadvantages>
+　　Costly.
+
+============================< Example >==========================
+【Request Parameter 1】
+{
+  "name": "Taro",
+  "gender": "male"
+}
+【Request Parameter 2】
+{
+  "name": "Hanako",
+  "gender": "female"
+}
+
+【Prefix】
+myPrefix/!{partitionKeyFromQuery:gender}/!{timestamp:yyyy}/!{timestamp:MM}/!{timestamp:dd}
+
+【S3】
+The following folders are created.
+myPrefix/male/2023/06/01
+myPrefix/female/2023/06/01
+
+============================================================
+
+　　- S3 Bucket Prefix
+　　　If set as follows, a folder will be created in S3 as shown in the example below, and files will be stored under the folder.
+　　　Example:
+　　　　Config: myPrefix/! {timestamp:yyyy}/! {timestamp:MM}/! {timestamp:dd}/!
+　　　　S3: myPrefix/2023/06/01
+　　- S3 bucket error output prefix
+　　　If a request results in a 500 error, the request is stored in the error folder here.　　
+　　　Example:
+　　　　Config: myPrefix/result=! {firehose:error-output-type}/! {timestamp:yyyy}/! {timestamp:MM}/! {timestamp:dd}/!　
+
+- Buffer hinting, compression, and encryption
+　- Buffer Size
+　　If small, data in the buffer is spit out immediately. Therefore, the storage time to S3 approaches real time.
+　- Buffer Interval
+　　Regardless of the buffer capacity, the buffer is emptied periodically at this interval. (Data is sent to S3)
+
+- S3 Compression and Encryption
+　- Compression of data records
+　　Various compression methods can be selected; compression is performed in a format consistent with the format to be stored in S3. Compression reduces the size of the data to be sent and the size of the data to be stored in S3.
+　　Decompression is performed when sending data to ETL tools, etc. In the case of Glue, data can be decompressed and retrieved from S3.
+　- Encryption of data records
+　　Kinesis Data Firehose buffer => encrypts data in S3.
+　　AWS KMS is used, so the fee for AWS KMS will be charged.
+　　Enable when handling important information such as payment and personal information?
+
+
+
+===================================================================================
+　日本語版bann
+===================================================================================
+Kinesis Data Firehose作成時（Direct PUT で S3にデータを保存する場合）
+
+- レコードを変換および転換
+　- AWS Lambda でソースレコードを変換
+　　LambdaでS3に保存する形式をカスタマイズできる。CSV形式で保存する等の処理を書いたり、その他加工ができる。
+　　Kinesis Data Firehose => S3 の間にLambdaを入れる。
+
+- 送信先の設定
+　- 動的パーティショニング
+　　有効にした場合、リクエストパラメーターの値次第で、Prefixを分別できる。
+　　<メリット>
+　　S3に蓄積したデータはGlue等のETLツールに使用される。動的パーティショニングにより、フィルタリングされている為、ETLツールに取り込む処理が効率化する。
+　　<デメリット>
+　　料金がかかる。
+============================< 例 >==========================
+【リクエストパラメーター1】
+{
+  "name": "Taro",
+  "gender": "male"
+}
+【リクエストパラメーター2】
+{
+  "name": "Hanako",
+  "gender": "female"
+}
+
+【Prefix】
+myPrefix/!{partitionKeyFromQuery:gender}/!{timestamp:yyyy}/!{timestamp:MM}/!{timestamp:dd}
+
+【S3】
+下記のようなフォルダが作成される。
+myPrefix/male/2023/06/01
+myPrefix/female/2023/06/01
+
+============================================================
+
+　　- S3 バケットプレフィックス
+　　　下記のように設定すると、S3で、下記の例の通りにフォルダが作成され、その下にファイルが保存される。
+　　　例：
+　　　　設定：myPrefix/!{timestamp:yyyy}/!{timestamp:MM}/!{timestamp:dd}
+　　　　S3: myPrefix/2023/06/01
+　　- S3 バケットエラー出力プレフィックス
+　　　リクエストが500エラーになった場合、こちらのエラーフォルダにリクエストが保管される。　　
+　　　例：
+　　　　設定：myPrefix/result=!{firehose:error-output-type}/!{timestamp:yyyy}/!{timestamp:MM}/!{timestamp:dd}　
+
+
+- バッファのヒント、圧縮、暗号化
+　- バッファサイズ
+　　小さい場合、バッファーに入ったデータが即吐き出される。その為、S3への保存時間がリアルタイムに近づく。
+　- バッファ間隔
+　　バッファーの容量に関わらず、この間隔で定期的にバッファーを空にする。（S3にデータを送信する）
+
+- S3 圧縮と暗号化
+　- データレコードの圧縮
+　　様々な圧縮方式を選択できる。S3で保存する形式に沿った形式で圧縮を行う。圧縮を行うことで、送信するデータの容量を軽くし、S3に保存する容量も軽減できる。
+　　ETLツール等にデータを送る際に解凍する。Glueの場合、S3から解凍して取得できる。
+　- データレコードの暗号化
+　　Kinesis Data Firehose buffer => S3 のデータを暗号化する。HTTPSで通信は暗号化されているが、データ自体は暗号化されていない為、2重でセキュリティーを強化したい場合に使用。
+　　AWS KMSを使用する為、そちらの料金がかかる。
+　　※ 決済や個人情報等の重要な情報を扱う場合に有効にする？
