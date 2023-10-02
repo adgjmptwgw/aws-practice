@@ -53,12 +53,12 @@
 
 **デフォルト（共有）**
 - 物理サーバーを複数ユーザで共有する
-- ほとんどの場合、こちらを使用する
+- ほとんどの場合、こちらを使用する  
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/20149e25-7b13-4b0e-ad92-8307e042b89d)  
 
 **専有**
 - 物理サーバーを1ユーザーで専有する
-- 物理サーバーを専有する為、料金が高い
+- 物理サーバーを専有する為、料金が高い  
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/b8a6c402-400a-48dd-bde5-c7e6832eb36b)  
 
 ## 5. アベイラビリティゾーン (AZ) の数
