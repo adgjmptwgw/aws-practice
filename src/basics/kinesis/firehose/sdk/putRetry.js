@@ -28,9 +28,9 @@ const putRecordToS3 = async () => await firehose.putRecord(params).promise();
 const putRecordWithRetry = async () => {
   try {
     const response = await putRecordToS3();
-    console.log("🍙===>", response);
+    console.log("Success:", response);
   } catch (err) {
-    console.log(err);
+    console.error("Error:", err);
     // --------------------------<エラーハンドリング１>-----------------------------
     if (err.code == "ServiceUnavailableException") {
       // NOYE: ServiceUnavailableExceptionの場合は再試行するべきという事が公式にも記載あり。

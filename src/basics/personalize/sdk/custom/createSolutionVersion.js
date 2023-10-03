@@ -33,9 +33,9 @@ const params = {
 const createVODRecommender = async () => {
   try {
     const response = await personalize.createSolutionVersion(params).promise();
-    console.log("===>response", response);
+    console.log("Success:", response);
   } catch (err) {
-    console.log("===>error", err);
+    console.error("Error:", err);
   }
 };
 

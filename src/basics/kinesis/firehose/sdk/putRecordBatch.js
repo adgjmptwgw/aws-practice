@@ -25,12 +25,12 @@ const params = {
 
 firehose.putRecordBatch(params, (err, data) => {
     if (err) {
-        console.log(`エラーメッセージ🐛: ${err}`);
+        console.error("Error:", err);
     } else {
-        console.log(`成功 🍙: ${data}`);
-        console.log(`FailedPutCount 🍙: ${data?.FailedPutCount}`);
-        console.log(`Encrypted 🍙: ${data?.Encrypted}`);
-        console.log(`RequestResponses 🍙: ${data?.RequestResponses}`);
-        console.log(`RecordId 🍙: ${data?.RequestResponses?.[0]?.RecordId}`);
+        console.log(`Success: ${data}`);
+        console.log(`FailedPutCount: ${data?.FailedPutCount}`);
+        console.log(`Encrypted: ${data?.Encrypted}`);
+        console.log(`RequestResponses: ${data?.RequestResponses}`);
+        console.log(`RecordId: ${data?.RequestResponses?.[0]?.RecordId}`);
     }
 });

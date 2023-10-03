@@ -27,9 +27,9 @@ const firehose = new AWS.Firehose({
 const putRecordToS3 = async () => {
   try {
     const response = await firehose.putRecord(params).promise();
-    console.log("🍙===>", response);
+    console.log("Success:", response);
   } catch (err) {
-    console.log(err);
+    console.log("Error:", err);
   }
 };
 

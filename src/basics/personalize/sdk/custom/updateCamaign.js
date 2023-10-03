@@ -14,9 +14,9 @@ const params = {
 const updateCampain = async () => {
   try {
     const response = await personalize.updateCampaign(params).promise();
-    console.log("=====>response", response);
+    console.log("Success:", response);
   } catch (err) {
-    console.log("=====>error", err);
+    console.error("Error:", err);
   }
 };
 
