@@ -26,7 +26,8 @@
 - 「VPCのみ」作成する場合は下記の手順
 1. VPC
 2. サブネット
-3. Internet Gateway
+3. Internet Gateway <br>
+**※ Internet GatewayをVPCにアタッチする。先にアタッチしないとNat Gateway作成時に「failed」となり作成に失敗する** <br>
 4. Nat Gateway
 5. ルートテーブル
 
