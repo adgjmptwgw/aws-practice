@@ -25,3 +25,9 @@ ALBからトラフィックをVPCにトラフィックを転送する際の転�
    - Dualstack
      - VPCとサブネットには、IPv6 CIDR ブロックが使用されている場合はこちらを選択する可能性あり
      - デュアルスタックの手順は知らないので、余裕があれば調べる。サブネットのルートテーブルでIPv6トラフィックをルーティング、セキュリティグループで、IPv6トラフィックを許可する等の対応が必要らしい。
+
+
+***
+
+**AWS Global Accelerator**  
+[AWS Global Acceleratorの記事](https://qiita.com/Dai_Kentaro/items/c25aed800e8d6cfd1f18)
