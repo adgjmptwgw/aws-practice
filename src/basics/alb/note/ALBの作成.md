@@ -37,11 +37,11 @@ ALBからトラフィックをVPCにトラフィックを転送する際の転�
 
 ***
 
-**ルーティングポリシー**
+**ルーティングポリシー**  
 [ルーティングポリシーの記事](https://o2mamiblog.com/aws-route53-routingpolicy-beginner/#toc2)
 
 
-**リスナー**
+**リスナー**  
 ALBにアクセスするプロトコルとポート（またはIPアドレス）に対して、どのターゲットグループで処理を捌くかコントロールする。
 
 **AWS Global Accelerator**  
