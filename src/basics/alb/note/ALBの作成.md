@@ -2,7 +2,8 @@
 コンソール上で「Application Load Balancerを作成」を実施する際の各種項目を解説する。  
 
 # 前提知識
-## TBD
+## SSLアクセラレータ
+HTTPSの通信を暗号/復号化するもの。ALBではHTTPS通信を復号化して、HTTP通信でVPC内のパブリックサブネットに通信します。
 
 # 手順
 ## 基本的な設定
@@ -28,6 +29,9 @@ ALBからトラフィックをVPCにトラフィックを転送する際の転�
 
 
 ***
+
+**リスナー**
+ALBにアクセスするプロトコルとポート（またはIPアドレス）に対して、どのターゲットグループで処理を捌くかコントロールする。
 
 **AWS Global Accelerator**  
 [AWS Global Acceleratorの記事](https://qiita.com/Dai_Kentaro/items/c25aed800e8d6cfd1f18)
