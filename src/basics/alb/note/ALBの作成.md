@@ -27,11 +27,23 @@ ALBからトラフィックをVPCにトラフィックを転送する際の転�
      - VPCとサブネットには、IPv6 CIDR ブロックが使用されている場合はこちらを選択する可能性あり
      - デュアルスタックの手順は知らないので、余裕があれば調べる。サブネットのルートテーブルでIPv6トラフィックをルーティング、セキュリティグループで、IPv6トラフィックを許可する等の対応が必要らしい。
 
+# 作成後
+
+[ALBのDNS名にドメインを割り当てる](https://dev.classmethod.jp/articles/route53-alias-crossaccount/)
+
+
+
+
 
 ***
+
+**ルーティングポリシー**
+[ルーティングポリシーの記事](https://o2mamiblog.com/aws-route53-routingpolicy-beginner/#toc2)
+
 
 **リスナー**
 ALBにアクセスするプロトコルとポート（またはIPアドレス）に対して、どのターゲットグループで処理を捌くかコントロールする。
 
 **AWS Global Accelerator**  
 [AWS Global Acceleratorの記事](https://qiita.com/Dai_Kentaro/items/c25aed800e8d6cfd1f18)
+
