@@ -7,5 +7,5 @@ TBD
 # 手順
 ドメイン登録を行うと、ホストゾーンも自動で作成される。  
 
-参考資料
-https://blog.serverworks.co.jp/route53-domain-registration
+[ドメイン登録の参考記事](https://blog.serverworks.co.jp/route53-domain-registration)
+
