@@ -1,0 +1,11 @@
+# 概要
+コンソール上で「ドメインを登録」を実施する際の各種項目を解説する。  
+
+# 前提知識
+TBD
+
+# 手順
+ドメイン登録を行うと、ホストゾーンも自動で作成される。  
+
+参考資料
+https://blog.serverworks.co.jp/route53-domain-registration
