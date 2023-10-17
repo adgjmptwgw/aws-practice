@@ -1,5 +1,6 @@
 # 概要
 コンソール上で「ジョブ定義の作成」を実施する際の各種項目を解説する。
+また、Fargateで構築する場合の手順を記載する。
 
 # 前提知識
 ## AWS Batchとは
@@ -17,5 +18,14 @@ EventBridge等と組み合わせて使用する。AWS Batchは主にジョブの
 ### ● 実行タイムアウト
 AWS Batchのジョブのタイムアウト時間
 AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウト時間を設定する。　
-
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/c4a03c05-8996-4c72-b970-c9d7cabb494f)
+
+### ● スケジュールの優先度
+キューの内のジョブの優先度。低い数字のものが優先度が高くなる。
+
+## Fargate プラットフォームの設定
+### ● Fargate プラットフォームのバージョン
+LinuxプラットフォームのバージョンによってECSの使える機能が異なる。
+基本的には`LATEST`で問題ないと思われる。
+
+[**AWS公式: ECSのLinuxプラットフォームバージョン**](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/platform-linux-fargate.html)
