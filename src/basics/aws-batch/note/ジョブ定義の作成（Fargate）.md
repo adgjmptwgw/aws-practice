@@ -25,7 +25,15 @@ AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウ�
 
 ## Fargate プラットフォームの設定
 ### ● Fargate プラットフォームのバージョン
-LinuxプラットフォームのバージョンによってECSの使える機能が異なる。
-基本的には`LATEST`で問題ないと思われる。
+- Linux or WindowsプラットフォームのバージョンによってECSの使える機能が異なる。
+- 基本的には`LATEST`で問題ないと思われる。
 
 [**AWS公式: ECSのLinuxプラットフォームバージョン**](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/platform-linux-fargate.html)
+
+### ランタイムプラットフォーム
+基本的に`Linux`を選択する。下記の1番に該当する場合のみ、`Windows`を選択する。
+
+WindowsでDockerを使用するには下記の2種類の方法がある。
+1. Windows上で Windows用 のDockerコンテナを動かす
+2. Windows上で Linux用 のDockerコンテナを動かす (WindowsのLinux仮想マシンであるWSL2を使用する) 
+
