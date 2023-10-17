@@ -20,7 +20,7 @@ AWS Batchのコンソールで、Fargateの「ジョブ定義の作成」を実�
 AWS Batchのコンソールで、Fargateの「ジョブの作成」を実施 => ECSで「タスク」が作成されて、実行される。  
 実行後、タスクは停止する。
 
-**<参考資料>**
+**<参考資料>**  
 [**AWS Batch構築の参考資料（入門）**](https://style.potepan.com/articles/32791.html)  
 
 # 手順
@@ -30,7 +30,7 @@ AWS Batchのコンソールで、Fargateの「ジョブの作成」を実施 => 
 AWS Batchの構築を実行すると、AWS Batchが自動的にEC2/ECSのリソースを作成してくれる。そのAWS BatchにEC2/ECSの操作権限を与える。
 基本的に`AWSServiceRoleForBatch`を選択する。このロールのPrincipalはAWS Batchで、ActionとしてEC2やECSリソースへのアクセスが割り当てられている。　
 
-**<参考資料>**
+**<参考資料>**  
 [**AWS公式: AWSServiceRoleForBatchロールについて**](https://docs.aws.amazon.com/ja_jp/batch/latest/userguide/service_IAM_role.html)  
 
 # タスク定義
