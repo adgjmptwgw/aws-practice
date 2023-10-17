@@ -44,7 +44,7 @@ AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウ�
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/c4a03c05-8996-4c72-b970-c9d7cabb494f)
 
 ### ● スケジュールの優先度
-キューの内のジョブの優先度。低い数字のものが優先度が高くなる。
+キューの内のジョブの優先度。高い数字のものが優先度が高くなる。
 
 ## Fargate プラットフォームの設定
 ### ● Fargate プラットフォームのバージョン
