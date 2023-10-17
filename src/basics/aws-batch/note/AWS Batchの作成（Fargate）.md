@@ -6,6 +6,16 @@
 ## AWS Batchとは
 EventBridge等と組み合わせて使用する。AWS Batchは主にジョブの実行を行うもの。  
 キューをポーリングしてECSやEC2上のタスク（プログラムの関数コード等）を実行してくれるサービス。  
+
+## AWS Batch の具体的な動作イメージ
+1. **コンピューティング環境を作成**
+AWS Batchのコンソールで、Fargateの「コンピューティング環境を作成」を実施 => ECSの「クラスター」が作成される。
+2. **ジョブ定義の作成**
+AWS Batchのコンソールで、Fargateの「ジョブ定義の作成」を実施 => ECSコンソールの「タスク定義」に新たなタスク定義が作成される。  
+3. **ジョブの作成**
+AWS Batchのコンソールで、Fargateの「ジョブの作成」を実施 => ECSで「タスク」が作成されて、実行される。  
+実行後、タスクは停止する。
+
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/833c5c9b-8eb4-47e8-81c2-962aa1a01861)  
 
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/406d1d05-2ab6-4185-8f89-43277dcc1ce9)  
