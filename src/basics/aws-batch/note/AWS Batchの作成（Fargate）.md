@@ -20,6 +20,9 @@ AWS Batchのコンソールで、Fargateの「ジョブ定義の作成」を実�
 AWS Batchのコンソールで、Fargateの「ジョブの作成」を実施 => ECSで「タスク」が作成されて、実行される。  
 実行後、タスクは停止する。
 
+**<参考資料>**
+[**AWS Batch構築の参考資料（入門）**](https://style.potepan.com/articles/32791.html)  
+
 # 手順
 ---
 # コンピューティング環境設定
