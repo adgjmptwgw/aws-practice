@@ -24,8 +24,9 @@ AWS Batchのコンソールで、Fargateの「ジョブの作成」を実施 => 
 [**AWS Batch構築の参考資料（入門）**](https://style.potepan.com/articles/32791.html)  
 
 # 手順
----
+
 # コンピューティング環境設定
+---
 ## サービスロール
 AWS Batchの構築を実行すると、AWS Batchが自動的にEC2/ECSのリソースを作成してくれる。そのAWS BatchにEC2/ECSの操作権限を与える。
 基本的に`AWSServiceRoleForBatch`を選択する。このロールのPrincipalはAWS Batchで、ActionとしてEC2やECSリソースへのアクセスが割り当てられている。　
@@ -34,6 +35,7 @@ AWS Batchの構築を実行すると、AWS Batchが自動的にEC2/ECSのリソ�
 [**AWS公式: AWSServiceRoleForBatchロールについて**](https://docs.aws.amazon.com/ja_jp/batch/latest/userguide/service_IAM_role.html)  
 
 # タスク定義
+---
 ## オーケストレーションタイプ
 今回はFargateでの構築手順を記述する為、`Fargete`を選択する。
 
