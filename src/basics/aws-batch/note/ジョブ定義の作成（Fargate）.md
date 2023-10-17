@@ -30,7 +30,7 @@ AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウ�
 
 [**AWS公式: ECSのLinuxプラットフォームバージョン**](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/userguide/platform-linux-fargate.html)
 
-### ランタイムプラットフォーム
+### ● ランタイムプラットフォーム
 基本的に`Linux`を選択する。下記の1番に該当する場合のみ、`Windows`を選択する。
 
 WindowsでDockerを使用するには下記の2種類の方法がある。
