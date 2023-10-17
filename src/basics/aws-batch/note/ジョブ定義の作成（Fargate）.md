@@ -33,7 +33,7 @@ AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウ�
 ### ● ランタイムプラットフォーム
 基本的に`Linux`を選択する。下記の1番に該当する場合のみ、`Windows`を選択する。
 
-WindowsでDockerを使用するには下記の2種類の方法がある。
+WindowsでDockerコンテナを使用するには下記の2種類の方法がある。
 1. Windows上で Windows用 のDockerコンテナを動かす
 2. Windows上で Linux用 のDockerコンテナを動かす (WindowsのLinux仮想マシンであるWSL2を使用する) 
 
