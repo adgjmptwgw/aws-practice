@@ -4,6 +4,8 @@
 # 前提知識
 ## SSLアクセラレータ
 HTTPSの通信を暗号/復号化するもの。ALBではHTTPS通信を復号化して、HTTP通信でVPC内のパブリックサブネットに通信します。
+![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/62499d92-bd2b-4c9d-a81a-abfc6a98e5fb)
+
 
 # 手順
 ## 基本的な設定
