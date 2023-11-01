@@ -3,7 +3,7 @@
 
 # 前提知識
 ## データソース
-### Subsequent crawler runs （初期クローリング以降ののクローラー）
+### Subsequent crawler runs （初期クローリング以降のクローラー）
 - Crawl all sub-folders
   - ソースを全て読み込む
   - 処理時間がかかり、費用がかさむ
