@@ -46,7 +46,7 @@ AWS Batchの構築を実行すると、AWS Batchが自動的にEC2/ECSのリソ�
 ## スケジューリングポリシー
 タスクのキューに重みづけができる。処理AとBがある場合に1:1、1:3の様に処理の重みづけが可能。
 
-**参考資料**  
+**<参考資料>**  
 - [**スケジューリングポリシー**](https://dev.classmethod.jp/articles/aws-batch-schedulepolicy-weight/)
 
 # タスク定義
