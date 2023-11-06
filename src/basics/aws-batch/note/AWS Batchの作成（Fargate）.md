@@ -42,6 +42,13 @@ AWS Batchの構築を実行すると、AWS Batchが自動的にEC2/ECSのリソ�
 **<参考資料>**  
 [**AWS公式: AWSServiceRoleForBatchロールについて**](https://docs.aws.amazon.com/ja_jp/batch/latest/userguide/service_IAM_role.html)  
 
+# ジョブキューの作成
+## スケジューリングポリシー
+タスクのキューに重みづけができる。処理AとBがある場合に1:1、1:3の様に処理の重みづけが可能。
+
+**参考資料**  
+- [**スケジューリングポリシー**](https://dev.classmethod.jp/articles/aws-batch-schedulepolicy-weight/)
+
 # タスク定義
 ## オーケストレーションタイプ
 今回はFargateでの構築手順を記述する為、`Fargete`を選択する。
