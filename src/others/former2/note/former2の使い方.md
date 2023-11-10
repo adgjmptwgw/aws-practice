@@ -9,6 +9,6 @@ aws sts get-session-token --serial-number <IAMロールにある自分のアカ�
 ```
 
 
-<参考資料>  
-[使い方](https://zenn.dev/creationup2u/articles/62c2853f01984f)
+**<参考資料>**  
+- [使い方](https://zenn.dev/creationup2u/articles/62c2853f01984f)
 
