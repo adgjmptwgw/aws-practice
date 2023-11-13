@@ -9,3 +9,9 @@
 
 ## 外形監視とは
 WebサイトやWebアプリケーションを、Webサーバー等が配置されているネットワークの外からユーザーと同様の方法でアクセスして監視すること。
+
+# 手順
+TBD
+
+**<参考資料>**
+- [**Canaryの作成手順**](https://dev.classmethod.jp/articles/checked-additional-metrics-in-cloudwatch-synthetics/) 
