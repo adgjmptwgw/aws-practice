@@ -11,7 +11,7 @@ docker build -t <タグ名> <実行するDockerfileのフォルダパス>
 ```
 
 **【build コマンド例】**  
-- カレントディレクトリにある全てのファイル（Dockerfileは必須）から test-image というイメージを作成する。
+- カレントディレクトリにあるDockerfileから test-image というイメージを作成する。
 ```
 docker build -t test-image .
 ```
