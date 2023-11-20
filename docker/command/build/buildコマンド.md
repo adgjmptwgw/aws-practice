@@ -15,3 +15,10 @@ docker build -t <タグ名> <実行するDockerfileのフォルダパス>
 ```
 docker build -t test-image .
 ```
+
+
+**【build コマンド例】**  
+- カレントディレクトリにあるDockerfileから test-image というイメージを作成する。
+```
+docker build -t test-image .
+```
