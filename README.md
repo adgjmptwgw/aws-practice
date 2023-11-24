@@ -9,9 +9,12 @@
 - SDK
   - 主に AWS SDK for JavaScript V3 を使用
 - テンプレートファイル
-  - CloudFormation のYAML形式のテンプレートのみ
+  - CloudFormation の YAML 形式のテンプレートのみ
 ### ⚫︎ 応用
 - 各種サービスを組み合わせた実装をまとめる
+### ⚫︎ その他
+- AWS　に関してのその他知識
+- AWSに関する便利なツール
 
 ## Docker
 ### ⚫︎ コマンド
