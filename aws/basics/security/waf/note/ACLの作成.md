@@ -16,3 +16,8 @@
 ### Body size limit
 - リクエストボディのサイズを制限し、サイズを超えたリクエストはブロックする。
 - バッファオーバーフロー, DoS攻撃を防止する為に設定する。
+
+## Configure metrics
+### Request sampling options
+- Enable にすると、WAFはルールに一致するリクエストのサンプルを保持する。これは無料。
+- TODO: この機能のユースケースは不明なので調べる。
