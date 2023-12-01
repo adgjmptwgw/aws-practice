@@ -17,6 +17,8 @@ docker compose up --build -d
 ```
 
 d オプションはバックグラウンドでdockerを起動する。その為、dockerコンテナ起動後も通常通り、そのCLIを使用できる。  
-フォアグラウンドで起動すると、コンテナを停止しない限り、そのCLIが使えない。
-https://qiita.com/Mi_tsu_ya/items/49a5e983f774f1e932e7
+フォアグラウンドで起動すると、コンテナを停止しない限り、そのCLIが使えない。  
+
+**<参考記事>**  
+- [d オプションについて](https://qiita.com/Mi_tsu_ya/items/49a5e983f774f1e932e7)
 
