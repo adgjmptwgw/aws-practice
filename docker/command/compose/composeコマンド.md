@@ -22,3 +22,9 @@ d オプションはバックグラウンドでdockerを起動する。その為
 **<参考記事>**  
 - [d オプションについて](https://qiita.com/Mi_tsu_ya/items/49a5e983f774f1e932e7)
 
+
+**【compose down コマンド（よく使われる）】**
+docker composeで作成したコンテナを停止し、削除。関連するイメージとボリュームも全て削除する。
+```
+docker compose down --rmi all --volumes --remove-orphans
+```
