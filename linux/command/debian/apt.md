@@ -8,7 +8,7 @@ apt-get update
 ```
 
 Dockerファイル等で Python を使用したい場合、下記の様に記載する。※アプリケーションがPythonの場合、aptで取得したPythonをインストールする
-```
+```Dockerfile
 RUN apt-get update && apt-get install -y \
     python \
 ```
