@@ -23,6 +23,7 @@ docker build -t test-image .
 docker build -t <タグ名> -f <実行するDockerfileのフォルダパス>
 ```
 
+**【例】**
 ```
  docker build -t test-image -f docker/production/Dockerfile
 ```
