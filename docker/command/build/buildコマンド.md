@@ -5,20 +5,24 @@ dockerのビルドコマンドについて解説する。
 [**こちらを参照**](https://github.com/adgjmptwgw/aws-practice/blob/main/docker/build/note/%E5%9F%BA%E7%A4%8E%E7%9F%A5%E8%AD%98.md)
 
 # docker build コマンド
+## 基本
 **【build コマンド】**
 ```
-docker build -t <タグ名> <実行するDockerfileのフォルダパス>
+docker build -t <タグ名> <ビルドするファイルを選択>
 ```
 
 **【build コマンド例】**  
-- カレントディレクトリにあるDockerfileから test-image というイメージを作成する。
+- カレントディレクトリにある全てのファイル（Dockerfileが含まれている必要あり）で test-image というイメージを作成する。
 ```
 docker build -t test-image .
 ```
 
-
-**【build コマンド例】**  
-- カレントディレクトリにあるDockerfileから test-image というイメージを作成する。
+## ファイル指定
+**【build ファイルを指定】**
 ```
-docker build -t test-image .
+docker build -t <タグ名> -f <実行するDockerfileのフォルダパス> <ビルドするファイルを選択> 
+```
+
+```
+ docker build -t test-image -f ./docker/production/Dockerfile .
 ```
