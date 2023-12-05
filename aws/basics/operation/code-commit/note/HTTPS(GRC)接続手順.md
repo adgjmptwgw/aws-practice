@@ -1,6 +1,10 @@
 # 概要
 CodeCommitでHTTPS（GRC）接続する為の手順を記載する。
 
+# GRCのメリット
+- Git Credentail Manager, AWS CodeCommit の HTTPS Git 認証情報にて認証情報の生成が不要
+- Python, pip, git-remote-codecommitをインストールしていれば、とにかくGitへの接続が楽になる
+
 # 手順
 ## 前提
 - gitをインストール済み
@@ -27,6 +31,7 @@ pip -V
 登録している場合は問題なし。awsのprofileを確認する。
 
 ## CodeCommitにHTTP（GRC）接続を行う
+
 ```
-git clone codecommit://AWSアカウントのプロフィール名@レポジトリ名
+git clone codecommit://AWSアカウント認証情報のprofile名@レポジトリ名
 ```
