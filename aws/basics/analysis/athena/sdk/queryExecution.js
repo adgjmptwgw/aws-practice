@@ -3,7 +3,7 @@ Athenaのクエリ実行SDKは下記流れとなる。
  1. クエリの実行開始（StartQueryExecutionCommand）
     クエリが完了するまで待ってくれるわけではない
  2. クエリの取得が完了しているか確認（GetQueryExecutionCommand）
-    手順1でクエリが完了するまで待つわけではない為、クエリが完了しているか1秒ごとに確認する必要がある（ステータスを取得：QueryExecutionState）
+    手順1でクエリが完了するまで待つわけではない為、クエリが完了しているか1秒ごとに確認する必要がある（ステータスのenum：QueryExecutionState）
  3. クエリの取得（GetQueryResultsCommand）
     手順2で、クエリの取得が完了している場合、結果を取得する。
 */
