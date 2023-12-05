@@ -8,7 +8,7 @@ dockerのビルドコマンドについて解説する。
 ## 基本
 **【build コマンド】**
 ```
-docker build -t <タグ名> <ビルドするファイルを選択>
+docker build -t <タグ名> <ビルドされるファイル群が存在するフォルダのパス>
 ```
 
 **【build コマンド例】**  
@@ -20,9 +20,9 @@ docker build -t test-image .
 ## ファイル指定
 **【build ファイルを指定】**
 ```
-docker build -t <タグ名> -f <実行するDockerfileのフォルダパス> <ビルドするファイルを選択> 
+docker build -t <タグ名> -f <実行するDockerfileのフォルダパス>
 ```
 
 ```
- docker build -t test-image -f ./docker/production/Dockerfile .
+ docker build -t test-image -f ./docker/production/Dockerfile
 ```
