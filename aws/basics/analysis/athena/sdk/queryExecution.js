@@ -164,4 +164,3 @@ import {
       ORDER BY "latest_interactions"."timestamp" DESC;`;
     return queryString;
   };
-  
