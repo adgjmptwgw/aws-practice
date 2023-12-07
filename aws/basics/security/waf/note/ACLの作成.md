@@ -21,3 +21,4 @@
 ### Request sampling options
 - Enable にすると、WAFはルールに一致するリクエストのサンプルを保持する。これは無料。
 - TODO: この機能のユースケースは不明なので調べる。
+

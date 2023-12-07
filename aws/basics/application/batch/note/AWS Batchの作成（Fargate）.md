@@ -75,4 +75,3 @@ AWS Batchジョブの処理フローで、`RUNNING`状態でのタイムアウ�
 WindowsでDockerコンテナを使用するには下記の2種類の方法がある。
 1. Windows上で Windows用 のDockerコンテナを動かす
 2. Windows上で Linux用 のDockerコンテナを動かす (WindowsのLinux仮想マシンであるWSL2を使用する) 
-
