@@ -10,4 +10,4 @@
 # VPCエンドポイント
 
 <**参考資料>**  
-- [**分かりやすい記事**](https://zenn.dev/taiki_asakawa/books/dfc00287d5b8c7/viewer/e092b3)
+- [**分かりやすい作成方法の記事**](https://zenn.dev/taiki_asakawa/books/dfc00287d5b8c7/viewer/e092b3)
