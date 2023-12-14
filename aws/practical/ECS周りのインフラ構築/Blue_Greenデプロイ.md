@@ -14,10 +14,14 @@ TBD
 # ナレッジ
 
 ## Amazon ECS CodeDeploy IAM ロール
-ECSのサービス作成画面にて、「デプロイオプション > ブルー/グリーンデプロイ > CodeDeploy のサービスロール」で使用するロール
+- ECSのサービス作成画面にて、「デプロイオプション > ブルー/グリーンデプロイ > CodeDeploy のサービスロール」で使用するロール。
+- 新たにIAMロールを作成し、```AWSCodeDeployRoleForECS```ポリシーをそのロールに割り当て、ECSのサービス作成画面で使用する。
 
 **<参考資料>**  
 - [**AWS公式：Amazon ECS CodeDeploy IAM ロール**](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/codedeploy_IAM_role.html)
+
+<details>
+    <summary>**AWSCodeDeployRoleForECSポリシーの内容**</summary>
 
 ```json
 {
@@ -60,6 +64,8 @@ ECSのサービス作成画面にて、「デプロイオプション > ブル�
     ]
 }
 ```
+</details>
+
 
 ## テストリスナーとは
 
