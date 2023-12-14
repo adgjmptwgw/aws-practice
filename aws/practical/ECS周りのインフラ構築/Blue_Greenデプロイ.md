@@ -21,7 +21,7 @@ TBD
 - [**AWS公式：Amazon ECS CodeDeploy IAM ロール**](https://docs.aws.amazon.com/ja_jp/AmazonECS/latest/developerguide/codedeploy_IAM_role.html)
 
 <details>
-    <summary>**AWSCodeDeployRoleForECSポリシーの内容**</summary>
+    <summary>AWSCodeDeployRoleForECSポリシーの内容</summary>
 
 ```json
 {
