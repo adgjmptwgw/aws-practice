@@ -1,0 +1,54 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        # NOTE: Required properties
+        # タスク定義のARN
+        TaskDefinition: "arn:aws:ecs:ap-northeast-1:014534751458:task-definition/kusumoto-test-nestjs-app:7"
+        LoadBalancerInfo:
+          # タスク定義のコンテナ名
+          ContainerName: "container-name"
+          # タスク定義のコンテナポート
+          ContainerPort: 3000
+        # NOTE: Optional properties
+        # PlatformVersion: "1.4.0"
+        # NetworkConfiguration:
+        #   AwsvpcConfiguration:
+        #     Subnets: ["subnet-1234abcd", "subnet-5678abcd"]
+        #     SecurityGroups: ["sg-12345678"]
+        #     AssignPublicIp: "ENABLED"
+        # CapacityProviderStrategy:
+        #   - Base: 0
+        #     CapacityProvider: "FARGATE"
+        #     Weight: 1
+
+# Hooks => CodeDeployのライフサイクルでLambdaやコマンドを実行できる。
+
+# ● Lambda関数の「名前」を設定する場合
+# ========================================================================================
+# Hooks:
+#   # タスク作成前
+#   - BeforeInstall: "LambdaFunctionName"
+#   # タスクセットが作成され、ターゲットグループの1つがそれに関連付けられた後
+#   - AfterInstall: "LambdaFunctionName"
+#   # テストリスナーが新しい（切替予定の）タスクセットにトラフィックを提供した後
+#   - AfterAllowTestTraffic: "LambdaFunctionName"
+#   # 元々のターゲットグループが新しい（切替予定の）タスクセットに関連付けられた後 & トラフィックが新しい（切替予定の）タスクセットに移行される前
+#   - BeforeAllowTraffic: "LambdaFunctionName"
+#   # 元々のターゲットグループが新しい（切替予定の）タスクセットに関連付けられた後
+#   - AfterAllowTraffic: "LambdaFunctionName"
+# ========================================================================================
+
+# ● コマンドを定義する場合。シェルスクリプトファイルを読み込む。
+# ========================================================================================
+# Hooks:
+#   - BeforeInstall:
+#       - location: ./before.sh
+#         timeout: 300
+#         runas: root
+#   - AfterInstall:
+#       - location: ./after.sh
+#         timeout: 300
+#         runas: root
+# ========================================================================================
