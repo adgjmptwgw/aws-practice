@@ -1,0 +1,7 @@
+
+# CloudFront → ALB の注意点
+CloudFrontで「オリジンドメイン」を選択する際、セレクトボックスでALBのDNSを選択してはいけない。※HTTPで接続する場合はこれでも問題ない。  
+ALBのDNSにはSSL/TLS証明書が紐づいていないため、CloudFrontからALB(オリジン)に対してHTTPS接続を行ったとしても接続がうまくいかない。
+
+**<参考資料>**  
+- [**CloudFrontとALB間のHTTPS接続の注意点**](https://zenn.dev/devcamp/articles/f488e3d22ff63e)
