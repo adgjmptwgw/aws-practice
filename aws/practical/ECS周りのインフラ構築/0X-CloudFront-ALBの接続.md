@@ -10,9 +10,11 @@ CloudFront-ALB間のHTTPS接続の手順を解説。
     - ALBのネットワークマッピング設定で、パブリックサブネットを選択している。
 
 ## 手順
+TBD
 
+### CloudFrontにカスタムヘッダーを設定する
 
-# CloudFront → ALB の注意点
+### CloudFront → ALB の注意点
 CloudFrontで「オリジンドメイン」を選択する際、セレクトボックスでALBのDNSを選択してはいけない。※HTTPで接続する場合はこれでも問題ない。  
 ALBのDNSにはSSL/TLS証明書が紐づいていないため、CloudFrontからALB(オリジン)に対してHTTPS接続を行ったとしても接続がうまくいかない。
 
