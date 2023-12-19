@@ -26,7 +26,7 @@ PCでbuildする際は、buildしているPCがM1 Macの場合はarm64、Inttel�
 また、ビルドしたいCPUのプラットフォームバージョンやnodejsのバージョン次第で、CodeBuildのオペレーティングシステム（Amazon Linux, Ubuntu）とイメージ設定を変更する必要がある。  
 
 **【ビルドコマンド】**  
-```
+```bash
 # arm64
 docker build --platform linux/arm64 --no-cache -t $REPO_NAME .
 
@@ -36,6 +36,15 @@ docker build --platform linux/x86_64 --no-cache -t $REPO_NAME .
 # amd64
 docker build --platform linux/amd64 --no-cache -t $REPO_NAME .
 ```
+
+**【CPUアーキテクチャ確認コマンド】**
+ビルド時のCPUアーキテクチャは何が使用されているか知りたい場合、下記の```uname -m```コマンドをCodeBuildのbuildspec.yamlに記載すれば、値を確認できる。
+
+```bash
+version=$(uname -m)
+echo $version
+```
+
 
 **【OSのイメージ設定例】**  
 NodeJS ランタイム18 を ECS の arm64 で動作させたい場合は、「Amazon Linux 2 AArch64 standard:3.0」を選択する。
