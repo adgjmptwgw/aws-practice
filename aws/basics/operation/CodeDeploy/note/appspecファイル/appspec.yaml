@@ -5,12 +5,12 @@ Resources:
       Properties:
         # NOTE: Required properties
         # タスク定義のARN
-        TaskDefinition: "arn:aws:ecs:ap-northeast-1:014534751458:task-definition/kusumoto-test-nestjs-app:7"
+        TaskDefinition: "arn:aws:ecs:ap-northeast-1:014534751458:task-definition/test-project-app:1"
         LoadBalancerInfo:
           # タスク定義のコンテナ名
           ContainerName: "container-name"
           # タスク定義のコンテナポート
-          ContainerPort: 3000
+          ContainerPort: 8080
         # NOTE: Optional properties
         # PlatformVersion: "1.4.0"
         # NetworkConfiguration:
