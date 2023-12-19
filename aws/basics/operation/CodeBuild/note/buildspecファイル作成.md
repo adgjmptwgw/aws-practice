@@ -21,4 +21,15 @@ exec /usr/local/bin/docker-entrypoint.sh: exec format error
 
 ### 解説
 PCでbuildする際は、buildしているPCがM1 Macの場合はarm64、Inttel製のMacであればx86_64である。これはECSタスク定義のプラットフォームバージョンと一致している必要がある。  
-その為、CodeBuildのbuildspecファイルで```docker build```を実行させる際は、
+その為、CodeBuildのbuildspecファイルで```docker build```を実行させる際は、下記の様にビルドを実施する。
+
+```
+# arm64
+docker build --platform linux/arm64 --no-cache -t $REPO_NAME .
+
+# x86_64
+docker build --platform linux/x86_64 --no-cache -t $REPO_NAME .
+
+# amd64
+docker build --platform linux/amd64 --no-cache -t $REPO_NAME .
+```
