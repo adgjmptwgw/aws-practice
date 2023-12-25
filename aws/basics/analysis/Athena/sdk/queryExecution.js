@@ -145,11 +145,11 @@ import {
               "interactions"."item_id",
               "interactions"."timestamp"
           FROM
-              "kusumoto-db"."interactions" AS "interactions"
+              "test-db"."interactions" AS "interactions"
           WHERE "interactions"."user_id" = ${userId}
           ORDER BY
               "interactions"."timestamp" DESC
-          LIMIT 3
+          LIMIT 10
       )
       
       
@@ -157,7 +157,7 @@ import {
           "items"."item_id",
           "latest_interactions"."timestamp"
       FROM
-          "kusumoto-db"."items" AS "items"
+          "test-db"."items" AS "items"
           INNER JOIN
               "latest_interactions"
           ON  "items"."item_id" = "latest_interactions"."item_id"
