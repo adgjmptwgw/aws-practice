@@ -9,7 +9,12 @@ EventBridge等と組み合わせて使用する。AWS Batchは主にジョブの
 
 ![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/833c5c9b-8eb4-47e8-81c2-962aa1a01861)  
 
-![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/406d1d05-2ab6-4185-8f89-43277dcc1ce9)   
+![image](https://github.com/adgjmptwgw/aws-practice/assets/66456130/406d1d05-2ab6-4185-8f89-43277dcc1ce9)  
+
+### Batchが順次ジョブを処理していく流れ
+
+[**超わかりやすい資料**](https://developer.so-tech.co.jp/entry/2023/05/16/120000 )  
+
 
 ## AWS Batch の具体的な動作イメージ
 1. **コンピューティング環境を作成**  
