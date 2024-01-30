@@ -19,7 +19,7 @@ git tag -d <タグ名>
 
 ## タグを全て削除する
 ```git
-git tag -d $(git tag -l)
+git tag -d $(git tag)
 ```
 
 # おまけ
