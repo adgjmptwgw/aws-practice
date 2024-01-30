@@ -12,7 +12,6 @@ git tag
 git tag <タグ名>
 ```
 
-# コマンド
 ## 選択したタグを削除する
 ```git
 git tag -d <タグ名>
