@@ -1,5 +1,6 @@
 ## ターゲットの詳細
-### 全てのAPI
+### ターゲットAPI
+**全てのAPI** を選択
 
 サービス：AWS Batch
 API：SubmitJob
