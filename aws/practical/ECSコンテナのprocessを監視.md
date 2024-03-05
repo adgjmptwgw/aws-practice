@@ -52,6 +52,10 @@
 
 
 ## サイドカーコンテナに入る
+コンテナに入る手順は[**こちら**](https://github.com/adgjmptwgw/infra-note/blob/main/aws/basics/application/ECS/note/%E6%A7%8B%E7%AF%89%E4%BB%A5%E5%A4%96/ECS%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%B8%E5%85%A5%E3%82%8B.md)参照
+
+コンテナに入った後の手順
+
 yumを使用する為、aptをインストール
 ```
 apt-get update
@@ -72,3 +76,8 @@ ps -aef
 ```
 kill -9 pidの番号
 ```
+
+
+## 参考資料
+- [**AWS公式**](https://aws.amazon.com/jp/blogs/news/announcing-additional-linux-controls-for-amazon-ecs-tasks-on-aws-fargate/)
+- [**サイドカーコンテナからアプリコンテナのprocess監視する記事**](https://dev.classmethod.jp/articles/ecs-on-fargate-support-shared-pid-namespace/)
