@@ -81,3 +81,4 @@ kill -9 pidの番号
 ## 参考資料
 - [**AWS公式**](https://aws.amazon.com/jp/blogs/news/announcing-additional-linux-controls-for-amazon-ecs-tasks-on-aws-fargate/)
 - [**サイドカーコンテナからアプリコンテナのprocess監視する記事**](https://dev.classmethod.jp/articles/ecs-on-fargate-support-shared-pid-namespace/)
+- [**プロセスの異常終了を検知する方法**](https://dev.classmethod.jp/articles/ecs-container-info/)
