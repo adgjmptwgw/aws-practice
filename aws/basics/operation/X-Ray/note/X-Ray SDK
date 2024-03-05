@@ -1,0 +1,7 @@
+# 概要
+AWS SDK for JavaScript V3 とは別物であるX-Ray SDKを解説する。  
+こちらはEC2にX-Rayデーモンを建てて、デーモン経由でX-Rayにトレースを送信する。
+
+## 参考資料
+- [AWS公式：X-Ray Node.js SDK Docs](https://docs.aws.amazon.com/xray-sdk-for-nodejs/latest/reference/)
+- [AWS公式：X-Ray Node.js SDK](https://docs.aws.amazon.com/ja_jp/xray/latest/devguide/xray-sdk-nodejs-middleware.html)
