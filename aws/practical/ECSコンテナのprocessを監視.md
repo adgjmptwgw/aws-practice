@@ -15,7 +15,6 @@
                     "protocol": "tcp",
                     "appProtocol": "http"
                 }
-            ...省略...
         },
         // サイドカーコンテナを作成。
         {
