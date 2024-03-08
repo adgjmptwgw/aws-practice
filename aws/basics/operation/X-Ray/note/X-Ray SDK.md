@@ -40,7 +40,8 @@ containerDefinitionsの配列に下記X-Rayデーモンコンテナを定義。
 
 ## X-Ray SDKをソースに記載する
 サポートに問い合わせしたところ、これをECRにPushして、Batchで実行すると、X-Rayトレースが取得できたらしい。　　
-こちらは共通化して各AWS Batchで使用する。
+こちらは共通化して各AWS Batchで使用する。  
+※```AWSXRay.setDaemonAddress``` はFargateであれば不要  
 
 ```JavaScript
 import  AWSXRay from "aws-xray-sdk";
