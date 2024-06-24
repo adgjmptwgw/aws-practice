@@ -2,6 +2,8 @@
 # ヘルスダッシュボード
 
 ## AWS User Notifications で通知できるサービスを検索する
+ヘルスダッシュボードで通知したいサービスをイベントパターンに記載するが、そのサービス名はドキュメントが存在しない為、下記コマンドでいちいち探し出すしかない。  
+完全一致したものしか検索できない為、非常に探すのに手間がかかる。
 
 ### イベントパターンの ```detail.service``` 内で使用できるサービス名を検索するコマンド
 
@@ -28,8 +30,8 @@ aws health describe-event-types  --max-results 100 --filter "services=EC2"
     ],
     "eventTypeCategory": [
       "issue",
-      "scheduledChanges",
-      "AccountNotifications"
+      "scheduledChange",
+      "accountNotification"
     ],
     "eventScopeCode": [
       "PUBLIC"
