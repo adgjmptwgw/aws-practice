@@ -6,6 +6,7 @@
 完全一致したものしか検索できない為、非常に探すのに手間がかかる。
 
 ### イベントパターンの ```detail.service``` 内で使用できるサービス名を検索するコマンド
+バージニアリージョンで実施する必要がある。
 
 ```bash
 aws health describe-event-types  --max-results 100 --filter "services=EC2"
