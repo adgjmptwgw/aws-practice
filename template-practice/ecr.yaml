@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: Count
+# ------------------------------------------------------------#
+# README
+# ------------------------------------------------------------#
+# - レジストリは作成できない為、スキャン設定はマネージドコンソール上で設定して下さい。
+
+# ------------------------------------------------------------#
+# Template Description
+# ------------------------------------------------------------#
+Description: ""
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Environment Variable Configs"
+        Parameters:
+          - EnvConfig
+      - Label:
+          default: "Project prefix"
+        Parameters:
+          - PJPrefix
+      - Label:
+          default: "List of repository names used in the application"
+        Parameters:
+          - Repositories
+
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------#
+Parameters:
+  # NOTE: 環境変数を変更するだけで、別々の環境のリソースを作成できます。
+  EnvConfig:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: "dev"
+  PJPrefix:
+    Type: String
+    Default: "pjPrefix"
+  Repositories:
+    Type: CommaDelimitedList
+    Default: "
+      test1,
+      test2,
+      test3
+      "
+
+Resources:
+  # ------------------------------------------------------------#
+  # Private Registry
+  # ------------------------------------------------------------#
+  # NOTE: 2024年1月時点では、CloudFormationの「Type: Custom::CustomResource」でのみ、ECR Privateレジストリの「拡張スキャン」設定を生成可能です。※LambdaのSDKにてレジストリを作成する方法
+  # その為、今回はレジストリをAWSマネージドコンソールから手動にて作成します。
+
+  # ------------------------------------------------------------#
+  # Private Repository
+  # ------------------------------------------------------------#
+  Repository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: !Sub "${EnvConfig}-${PJPrefix}-%s"
+      ImageTagMutability: "IMMUTABLE"
+      LifecyclePolicy:
+        LifecyclePolicyText: !Sub |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "リポジトリ内のイメージ数が3つを超えると、古いものから順に削除される。",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 3
+                },
+                "action": {
+                  "type": "expire"
+                }
+              }
+            ]
+          }
+    Count: !Ref Repositories

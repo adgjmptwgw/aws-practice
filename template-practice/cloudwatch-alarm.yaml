@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# Transform: Count
+# ------------------------------------------------------------#
+# README
+# ------------------------------------------------------------#
+
+# ------------------------------------------------------------#
+# Template Description
+# ------------------------------------------------------------#
+Description: ""
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Environment Variable Configs"
+        Parameters:
+          - EnvConfig
+      - Label:
+          default: "Project prefix"
+        Parameters:
+          - PJPrefix
+
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------#
+Parameters:
+  # NOTE: 環境変数を変更するだけで、別々の環境のリソースを作成できます。
+  EnvConfig:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: "dev"
+  PJPrefix:
+    Type: String
+    Default: "pjPrefix"
+
+# ------------------------------------------------------------#
+# Input Mappings
+# ------------------------------------------------------------#
+Mappings:
+  EnvMap:
+    dev:
+      Test1: "test1"
+      Test2: "test2"
+      Test3: "test3"
+    stg:
+      Test1: "test1"
+      Test2: "test2"
+      Test3: "test3"
+    prod:
+      Test1: "test1"
+      Test2: "test2"
+      Test3: "test3"
+
+    # Input Mappingsの使い方
+    # Value: !Sub
+    #   - "${AppName}-app"
+    #   - AppName: !FindInMap [EnvMap, !Ref EnvConfig, Test1]
+
+# ------------------------------------------------------------#
+# Conditions
+# ------------------------------------------------------------#
+Conditions:
+  IsProd: !Equals [!Ref EnvConfig, "prod"]
+
+Resources:
+  # ------------------------------------------------------------------------------------#
+  # X-Ray
+  # ------------------------------------------------------------------------------------#
+  # NOTE: X-Rayトレースのグループ内のフィルタにて、レスポンスタイムが閾値を上回った回数をApproximateTraceCountとして出力
+  XRayAppResponseTimeAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      ActionsEnabled: true
+      AlarmName: !Sub "${EnvConfig}-${PJPrefix}-app-responsetime"
+      MetricName: "ApproximateTraceCount"
+      Namespace: "AWS/X-Ray"
+      Statistic: "Maximum"
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      TreatMissingData: "missing"
+      ComparisonOperator: "GreaterThanOrEqualToThreshold"
+      Dimensions: 
+        - 
+          Name: "GroupName"
+          # NOTE: X-Rayのグループ名を指定。X-Rayのテンプレートとリンクしている。
+          Value: !Sub "api-responsetime-2.0sec"
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${EnvConfig}-${PJPrefix}-test-sns"
+
+  # ------------------------------------------------------------------------------------#
+  # Custom Metrics
+  # ------------------------------------------------------------------------------------#
+  # 計算して、その結果を閾値にする場合は下記の様に実装する
+  OpenSearchDataNodeFreeStorageSpaceAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      AlarmName: !Sub "${EnvConfig}-${PJPrefix}-opensearch-cluster-freestoragespace"
+      ActionsEnabled: true
+      EvaluationPeriods: 1
+      DatapointsToAlarm: 1
+      Threshold: 25
+      ComparisonOperator: "LessThanOrEqualToThreshold"
+      TreatMissingData: "breaching"
+      Metrics:
+        - Id: "e1"
+          Expression: !Sub
+            - "(m1/${OpenSearchEBSVolumeSizeMiBPerEnv})*100"
+            - OpenSearchEBSVolumeSizeMiBPerEnv: 100000
+          Label: "opensearch-cluster-freestoragespace"
+          ReturnData: true
+        - Id: "m1"
+          MetricStat:
+            Metric:
+              Namespace: "AWS/ES"
+              MetricName: "FreeStorageSpace"
+              # TODO: Dimensionsを記載
+              Dimensions:
+                - Name: "DomainName"
+                  Value: "opensearch-domain"
+                - Name: "ClientId"
+                  Value: !Ref AWS::AccountId
+            Period: 600
+            Stat: "Average"
+          ReturnData: false
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${EnvConfig}-${PJPrefix}-test-sns"
+
+  # ECSのロググループからメトリクスフィルターの条件にあてはまるものをアラームとして出力
+  ECSServiceAppErrorAlarm:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      ActionsEnabled: true
+      AlarmName: !Sub "${EnvConfig}-${PJPrefix}-ecs-service-test-app-error" 
+      # NOTE: このメトリクス名はメトリクスフィルターのメトリクス名と紐づいている
+      MetricName: "Error" 
+      Namespace: "ECS/test-app"
+      Statistic: "Maximum"
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      TreatMissingData: "missing"
+      ComparisonOperator: "GreaterThanOrEqualToThreshold"
+      AlarmActions:
+        - !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${EnvConfig}-${PJPrefix}-test-sns"

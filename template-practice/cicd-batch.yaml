@@ -1,0 +1,185 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# ------------------------------------------------------------#
+# README
+# ------------------------------------------------------------#
+# 【スタック作成前の準備】
+# AWSアカウントで最初にCodePipeineを作成すると、ソースアーティファクトとしてS3が自動で生成されます。そこで作成されたS3のバケット名を下記のリソースに割リ当ててください。
+# AWS::CodePipeline::Pipeline の ArtifactStore.Location にS3名を記載する。
+
+# 【スタック作成後の各種設定】
+# 1. CodeCommitをCloneし、Pushまで行う事でmainブランチを作成する。
+# 2. 「CodeBuild > ビルドの詳細 > ソース」ページにある下記の項目を編集
+#   - ブランチ："main" を選択
+#   - サービスロールのアクセス許可：「AWS CodeBuild にこのサービスロールの編集を許可し、このビルドプロジェクトでの使用を可能にする」のチェックを外す
+# 3. 「CodeBuild > ビルドの詳細 > ソース」ページで、buildSpecのファイルパスを修正する。
+# 4. CodePipelineの編集画面で、何も編集せず「保存」ボタンをクリック
+#   - CloudWatch Events ルール => ターゲットとして、該当のパイプラインを適用させる。これでCodeCommitにPushやMergeが走ると、イベントルールが検出して自動でPipelineが動作する。
+
+# ------------------------------------------------------------#
+# Template Description
+# ------------------------------------------------------------#
+Description: ""
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Environment Variable Configs"
+        Parameters:
+          - EnvConfig
+      - Label:
+          default: "Project prefix"
+        Parameters:
+          - PJPrefix
+
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------#
+Parameters:
+  # NOTE: 環境変数を変更するだけで、別々の環境のリソースを作成できます。
+  EnvConfig:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: "dev"
+  PJPrefix:
+    Type: String
+    Default: "pjPrefix"
+  # NOTE: CodePipelineが自動で作成するS3バケット名の末尾のID部分
+  BucketNumber:
+    Type: String
+    Default: "012345678"
+
+Resources:
+  # ------------------------------------------------------------#
+  # CodeBuild
+  # ------------------------------------------------------------#
+  # AWS Batch用
+  CodeBuildProjectForBatch:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-batch-app-test-build"
+      Source:
+        GitCloneDepth: 1
+        # NOTE: buildspec.yamlを配置しているのパスを記載する
+        BuildSpec: "buildspec.yaml"
+        GitSubmodulesConfig:
+          FetchSubmodules: false
+        InsecureSsl: false
+        Location: !Sub "https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/${EnvConfig}-${PJPrefix}-batch-test"
+        Type: "CODECOMMIT"
+      Artifacts:
+        Type: "NO_ARTIFACTS"
+      Cache: 
+        Type: "LOCAL"
+        Modes: 
+        - "LOCAL_DOCKER_LAYER_CACHE"
+      Environment:
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        EnvironmentVariables:
+          - Name: "ENV_CONFIG"
+            Type: "PLAINTEXT"
+            Value: !Ref EnvConfig
+          - Name: "PJ_PREFIX"
+            Type: "PLAINTEXT"
+            Value: !Ref PJPrefix
+          - Name: "IMAGE_TAG"
+            Type: "PLAINTEXT"
+            Value: "latest"
+        Image: "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
+        ImagePullCredentialsType: "CODEBUILD"
+        PrivilegedMode: true
+        Type: "ARM_CONTAINER"
+      ServiceRole: !Sub "arn:aws:iam::${AWS::AccountId}:role/${EnvConfig}-${PJPrefix}-batch-app-test-build"
+      TimeoutInMinutes: 60
+      QueuedTimeoutInMinutes: 480
+      EncryptionKey: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/s3"
+      VpcConfig:
+        VpcId:
+          Fn::ImportValue: !Sub ${EnvConfig}-${PJPrefix}-vpc
+        Subnets:
+          - Fn::ImportValue: !Sub ${EnvConfig}-${PJPrefix}-subnet-1-a-private
+          - Fn::ImportValue: !Sub ${EnvConfig}-${PJPrefix}-subnet-3-c-private
+        SecurityGroupIds:
+          - Fn::ImportValue: !Sub ${EnvConfig}-${PJPrefix}-codebuild-sg
+      BadgeEnabled: false
+      LogsConfig:
+        CloudWatchLogs:
+          Status: "ENABLED"
+        S3Logs:
+          Status: "DISABLED"
+          EncryptionDisabled: false
+      Visibility: "PRIVATE"
+
+  # ------------------------------------------------------------#
+  # CodePipeline
+  # ------------------------------------------------------------#
+  # AWS Batch用
+  CodePipelinePipelineForBatch:
+    Type: "AWS::CodePipeline::Pipeline"
+    Properties:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-batch-app-test-pipeline"
+      RoleArn: !Sub "arn:aws:iam::${AWS::AccountId}:role/${EnvConfig}-${PJPrefix}-batch-app-test-codepipeline-role"
+      ArtifactStore:
+        Location: !Sub "codepipeline-${AWS::Region}-${BucketNumber}"
+        Type: "S3"
+      PipelineType: "V2"
+      Stages:
+        - Name: "Source"
+          Actions:
+            - Name: "Source"
+              ActionTypeId:
+                Category: "Source"
+                Owner: "AWS"
+                Provider: "CodeCommit"
+                Version: "1"
+              Configuration:
+                BranchName: "main"
+                OutputArtifactFormat: "CODE_ZIP"
+                PollForSourceChanges: "false"
+                RepositoryName: !Sub "${EnvConfig}-${PJPrefix}-batch-test"
+              OutputArtifacts:
+                - Name: "SourceArtifact"
+              Region: !Ref AWS::Region
+              Namespace: "SourceVariables"
+              RunOrder: 1
+        - Name: "BuildManualApproval"
+          Actions:
+            - Name: "BuildManualApproval"
+              ActionTypeId:
+                Category: "Approval"
+                Owner: "AWS"
+                Provider: "Manual"
+                Version: "1"
+              Configuration:
+                CustomData: !Sub "Batchアプリ（%s）のビルド実行手動承認依頼"
+                # NOTE: 手動承認を実施するARN
+                NotificationArn: !Sub "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${EnvConfig}-${PJPrefix}-test-sns"
+              Region: !Ref AWS::Region
+              RunOrder: 1
+        - Name: "Build"
+          Actions:
+            - Name: "Build"
+              ActionTypeId:
+                Category: "Build"
+                Owner: "AWS"
+                Provider: "CodeBuild"
+                Version: "1"
+              Configuration:
+                ProjectName: !Sub "${EnvConfig}-${PJPrefix}-batch-app-test-build"
+              InputArtifacts:
+                - Name: "SourceArtifact"
+              OutputArtifacts:
+                - Name: "BuildArtifact"
+              Region: !Ref AWS::Region
+              Namespace: "BuildVariables"
+              RunOrder: 1
+
+  # ------------------------------------------------------------#
+  # CodeCommit
+  # ------------------------------------------------------------#
+  CodeCommitRepository:
+    Type: "AWS::CodeCommit::Repository"
+    Properties:
+      RepositoryName: !Sub "${EnvConfig}-${PJPrefix}-batch-test"

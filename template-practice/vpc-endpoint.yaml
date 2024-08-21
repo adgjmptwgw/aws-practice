@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# ------------------------------------------------------------#
+# README
+# ------------------------------------------------------------#
+# - VPCエンドポイントのTagはCloudFormationでサポートされていないため、手動で設定する必要があります。
+# ------------------------------------------------------------#
+# ------------------------------------------------------------#
+# Template Description
+# ------------------------------------------------------------#
+Description: ""
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Environment Variable configs"
+        Parameters:
+          - EnvConfig
+      - Label:
+          default: "Project prefix"
+        Parameters:
+          - PJPrefix
+
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------#
+Parameters:
+  # NOTE: 環境変数を変更するだけで、別々の環境のリソースを作成できます。
+  EnvConfig:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: "dev"
+  PJPrefix:
+    Type: String
+    Default: "pjPrefix"
+
+Resources:
+  # ------------------------------------------------------------#
+  #  VPC Endpoint
+  # ------------------------------------------------------------#
+  SecuretManagerVPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.secretsmanager"
+      SubnetIds:
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-1-a-private",
+          }
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-3-c-private",
+          }
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpce-secretmanager-sg",
+          }
+
+  SSMVPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssm"
+      SubnetIds:
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-1-a-private",
+          }
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-3-c-private",
+          }
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-bastion-sg" }
+        - { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpce-systemmanager-sg" }
+
+  EC2VPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ssmmessages"
+      SubnetIds:
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-1-a-private",
+          }
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-bastion-sg" }
+
+  EC2ForSSMAgentVPCEndpoint:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcEndpointType: "Interface"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.ec2messages"
+      SubnetIds:
+        - {
+            "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-subnet-1-a-private",
+          }
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-bastion-sg" }

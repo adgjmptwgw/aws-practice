@@ -1,0 +1,424 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# ------------------------------------------------------------#
+# Template Description
+# ------------------------------------------------------------#
+Description: ""
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: "Environment Variable Configs"
+        Parameters:
+          - EnvConfig
+
+      - Label:
+          default: "Project prefix"
+        Parameters:
+          - PJPrefix
+
+# ------------------------------------------------------------#
+# Input Parameters
+# ------------------------------------------------------------#
+Parameters:
+  # NOTE: 環境変数を変更するだけで、別々の環境のリソースを作成できます。
+  EnvConfig:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+    Default: "dev"
+
+  PJPrefix:
+    Type: String
+    Default: "pjPrefix"
+
+
+Resources:
+# ------------------------------------------------------------#
+# SecurityGroup
+# ------------------------------------------------------------#
+  # RDS
+  RDSSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For RDS"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-rds-instance-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-rds-instance-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+
+  # # RDS - RDS Proxy用インバウンドルール
+  RDSSecurityGroupProxyIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+      SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+      Description: "for rds proxy"
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !Ref RDSProxySecurityGroup
+
+  # RDS - 踏み台EC2用インバウンドルール
+  RDSSecurityGroupEC2InstanceIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+      SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+      Description: "for bastion server"
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !Ref EC2BastionSecurityGroup
+
+  # RDS - Glue用インバウンドルール
+  RDSSecurityGroupGlueIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+      SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+      Description: "for glue connection"
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      SourceSecurityGroupId: !GetAtt RDSSecurityGroup.GroupId
+
+  # RDS - Batch用インバウンドルール
+  RDSSecurityGroupBatchIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+      SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+      Description: "For Batch"
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !GetAtt BatchSecurityGroup.GroupId
+
+  # RDSアウトバウンドルール
+  RDSSecurityGroupEgress:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      CidrIp: 0.0.0.0/0
+      IpProtocol: "-1"
+      # FromPort: -1
+      # ToPort: -1
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+
+  # RDSProxy用
+  RDSProxySecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For RDSProxy"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-rds-proxy-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-rds-proxy-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref LambdaSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For Lambda"
+          FromPort: 3306
+          IpProtocol: "tcp"
+          ToPort: 3306
+        - SourceSecurityGroupId: !Ref ECSSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For ECS"
+          FromPort: 3306
+          IpProtocol: "tcp"
+          ToPort: 3306
+        - SourceSecurityGroupId: !Ref BatchSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For Batch"
+          FromPort: 3306
+          IpProtocol: "tcp"
+          ToPort: 3306
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # 踏み台サーバー用
+  EC2BastionSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For bastion server"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-bastion-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-bastion-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref VPCEndpointSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For VPC Endpoints"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # ALB用
+  ALBSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For ALB"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-alb-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-alb-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        - SourcePrefixListId: "pl-58a04531"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # VPCエンドポイント用
+  VPCEndpointSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For VPC endpoints"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-vpc-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-vpc-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        - CidrIp: "10.0.32.0/20"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # Lambda実行用
+  LambdaSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For Lambda execution"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-lambda-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-lambda-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # コンテナインスタンス用、ALB、踏み台のみ許可
+  ECSSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Only allowed for container instances, ALBs, and stepping stones"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-ecs-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-ecs-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref ALBSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "ALB health check (ecs-task-3)"
+          FromPort: 3002
+          IpProtocol: "tcp"
+          ToPort: 3002
+        - SourceSecurityGroupId: !Ref ALBSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "ALB health check (ecs-task-2)"
+          FromPort: 3001
+          IpProtocol: "tcp"
+          ToPort: 3001
+        - SourceSecurityGroupId: !Ref ALBSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "ALB health check (ecs-task-1)"
+          FromPort: 3000
+          IpProtocol: "tcp"
+          ToPort: 3000
+        - SourceSecurityGroupId: !Ref EC2BastionSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "bastion server"
+          FromPort: 22
+          IpProtocol: "tcp"
+          ToPort: 22
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+  # AWS Batch用
+  BatchSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "For Batch execution"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-batch-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-batch-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+  
+  # CodeBuild用
+  CodeBuildSecurityGroup:
+      Type: "AWS::EC2::SecurityGroup"
+      Properties:
+          GroupDescription: "For CodeBuild"
+          GroupName: !Sub "${EnvConfig}-${PJPrefix}-codebuild-sg"
+          Tags:
+            - Key: "Name"
+              Value: !Sub "${EnvConfig}-${PJPrefix}-codebuild-sg"
+          VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+          SecurityGroupEgress: 
+            - CidrIp: "0.0.0.0/0"
+              IpProtocol: "-1"
+
+  # Secret ManagerのVPC endpoint用
+  VPCESecretManagerSecurityGroup:
+      Type: "AWS::EC2::SecurityGroup"
+      Properties:
+          GroupDescription: "VPC endpoint for Secret Manager"
+          GroupName: !Sub "${EnvConfig}-${PJPrefix}-vpce-secretmanager-sg"
+          Tags:
+            - Key: "Name"
+              Value: !Sub "${EnvConfig}-${PJPrefix}-vpce-secretmanager-sg"
+          VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+          SecurityGroupIngress:
+            - SourceSecurityGroupId: !Ref ECSSecurityGroup
+              SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+              Description: "For ECS"
+              FromPort: 443
+              IpProtocol: "tcp"
+              ToPort: 443
+            - SourceSecurityGroupId: !Ref LambdaSecurityGroup
+              SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+              Description: "For Lambda"
+              FromPort: 443
+              IpProtocol: "tcp"
+              ToPort: 443
+            - SourceSecurityGroupId: !Ref BatchSecurityGroup
+              SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+              Description: "For Batch"
+              FromPort: 443
+              IpProtocol: "tcp"
+              ToPort: 443
+            - SourceSecurityGroupId: !Ref CodeBuildSecurityGroup
+              SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+              Description: "For CodeBuild"
+              FromPort: 443
+              IpProtocol: "tcp"
+              ToPort: 443
+          SecurityGroupEgress: 
+            - CidrIp: "0.0.0.0/0"
+              IpProtocol: "-1"
+
+  # System ManagerのVPC endpoint用
+  VPCESystemManagerSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "VPC endpoint for System Manager"
+      GroupName: !Sub "${EnvConfig}-${PJPrefix}-vpce-systemmanager-sg"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${EnvConfig}-${PJPrefix}-vpce-systemmanager-sg"
+      VpcId: { "Fn::ImportValue": !Sub "${EnvConfig}-${PJPrefix}-vpc" }
+      SecurityGroupIngress:
+        # TODO: 仮で実装中。
+        - SourceSecurityGroupId: !Ref ECSSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For ECS"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+        # TODO: 仮で実装中。
+        - SourceSecurityGroupId: !Ref BatchSecurityGroup
+          SourceSecurityGroupOwnerId: !Ref AWS::AccountId
+          Description: "For Batch"
+          FromPort: 443
+          IpProtocol: "tcp"
+          ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: "0.0.0.0/0"
+          IpProtocol: "-1"
+
+
+# ------------------------------------------------------------#
+# Output Parameters
+# ------------------------------------------------------------#
+Outputs:
+  # RDS用
+  RDSSecurityGroup:
+    Value: !Ref RDSSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-rds-instance-sg"
+
+  # RDSProxy
+  RDSProxySecurityGroup:
+    Value: !Ref RDSProxySecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-rds-proxy-sg"
+
+  # EC2 Bastion
+  EC2BastionSecurityGroup:
+    Value: !Ref EC2BastionSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-bastion-sg"
+
+  # ALB用
+  ALBSecurityGroup:
+    Value: !Ref ALBSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-alb-sg"
+
+  # VPC用
+  VPCEndpointSecurityGroup:
+    Value: !Ref VPCEndpointSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-vpc-sg"
+
+  # Lambda用
+  LambdaSecurityGroup:
+    Value: !Ref LambdaSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-lambda-sg"
+
+  # コンテナインスタンス用、ALB、踏み台のみ許可
+  ECSSecurityGroup:
+    Value: !Ref ECSSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-ecs-sg"
+
+  # Batch用
+  BatchSecurityGroup:
+    Value: !Ref BatchSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-batch-sg"
+
+  # CodeBuild用
+  CodeBuildSecurityGroup:
+    Value: !Ref CodeBuildSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-codebuild-sg"
+
+  # Securet ManagerのVPC endpoint用
+  VPCESecretManagerSecurityGroup:
+    Value: !Ref VPCESecretManagerSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-vpce-secretmanager-sg"
+
+  # System ManagerのVPC endpoint用
+  VPCESystemManagerSecurityGroup:
+    Value: !Ref VPCESystemManagerSecurityGroup
+    Export:
+      Name: !Sub "${EnvConfig}-${PJPrefix}-vpce-systemmanager-sg"
